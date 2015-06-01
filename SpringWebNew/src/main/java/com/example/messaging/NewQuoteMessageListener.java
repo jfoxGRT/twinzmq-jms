@@ -1,0 +1,70 @@
+package com.example.messaging;
+
+import com.example.model.Quote;
+import com.example.service.QuoteService;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.StringReader;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+
+
+@Component
+public class NewQuoteMessageListener implements MessageListener {
+	private static final Logger log = Logger.getLogger(NewQuoteMessageListener.class);
+
+	@Autowired
+	QuoteService quoteService;
+
+
+	@Transactional(rollbackFor=Throwable.class, propagation=Propagation.REQUIRES_NEW)
+	public void onMessage(Message message) {
+		log.info("ONMESSAGE: received new quote message: " + message.toString());
+		if(message instanceof TextMessage) {
+			TextMessage textMsg = (TextMessage) message ;
+			String theText;
+			try {
+				theText = textMsg.getText();
+			} catch (JMSException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+			JsonReader reader = Json.createReader(new StringReader(theText));
+			JsonObject json = reader.readObject();
+			log.info("handling json: " + json);
+			int id = json.getInt("id");
+			String quoteStr = json.getString("quote");
+			log.info("id is: " + id + " and quote: '" + quoteStr + "'");
+			//  lookup and update
+			Quote quoteObj = quoteService.getQuoteById(id);
+			if(quoteObj != null){
+				log.info("saving: " + quoteObj);
+				if(quoteObj.getQuoteText().contains(QuoteService.FAIL_PRE_ACK_STRING)) {
+					throw new RuntimeException("FORCED ERROR: " + QuoteService.FAIL_PRE_ACK_STRING + "included in quote.");
+				}
+				quoteObj.setAcknowledged(true);
+				quoteService.save(quoteObj);
+				log.info("saved");
+				if(quoteObj.getQuoteText().contains(QuoteService.FAIL_POST_ACK_STRING)) {
+					throw new RuntimeException("FORCED ERROR: " + QuoteService.FAIL_POST_ACK_STRING + "included in quote.");
+				}
+			}
+
+		} else {
+			log.error("cannot handle message, expecting TextMessage but received " + message.getClass().getName());
+		}
+	}
+
+}
