@@ -1,6 +1,6 @@
 package com.example.dao;
 
-import java.util.List;
+import com.example.model.Quote;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.model.Quote;
+import java.util.List;
 
 
 @Repository("quoteDao")
@@ -19,10 +19,10 @@ public class QuoteDaoImpl implements QuoteDao {
 
 	@Autowired
 	private SessionFactory sessionFactory;
-	
+
 	@Transactional(propagation=Propagation.MANDATORY)
 	public void saveQuote(Quote quote) {
-		this.sessionFactory.getCurrentSession().saveOrUpdate(quote);
+		this.sessionFactory.getCurrentSession().save(quote);
 	}
 
 	@SuppressWarnings("unchecked")

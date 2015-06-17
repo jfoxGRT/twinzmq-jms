@@ -51,7 +51,9 @@ public class NewQuoteMessageListener implements MessageListener {
 			Quote quoteObj = quoteService.getQuoteById(id);
 			if(quoteObj != null){
 				try{
-					log.debug("saving: " + quoteObj);
+					log.debug("From SUBSCRIBER 1, saving: " + quoteObj);
+					quoteObj.setQuoteText("From SUBSCRIBER 1: " + quoteObj.getQuoteText());
+
 					if(quoteObj.getQuoteText().contains(QuoteService.FAIL_PRE_ACK_STRING)) {
 						throw new RuntimeException("FORCED ERROR: " + QuoteService.FAIL_PRE_ACK_STRING + "included in quote.");
 					}

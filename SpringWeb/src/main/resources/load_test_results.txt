@@ -28,3 +28,16 @@ real	13m19.043s
 user	3m27.508s
 sys		2m21.491s
 
+Mixed test:
+
+real	15m49.338s
+user	3m48.953s
+sys		2m44.012s
+
+Test: Count = 10028
+FailBeforePreMsg: Count = 10080
+failAfterPreMsg: Count = 9992
+failAfterJdbcInsert: Count = 9913
+failAfterPostMsg: Count = 9988
+
+
