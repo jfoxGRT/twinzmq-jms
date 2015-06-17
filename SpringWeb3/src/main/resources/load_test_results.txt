@@ -1,0 +1,43 @@
+Start no-rollback test
+
+real	14m51.737s
+user	3m33.747s
+sys	    2m39.222s
+
+FailBeforePreMsg test
+
+real	9m42.104s
+user	3m26.473s
+sys	    2m22.566s
+
+failAfterPreMsg test
+
+real	11m19.081s
+user	3m27.879s
+sys		2m26.943s
+
+failAfterJdbcInsert test
+
+real	14m43.637s
+user	3m28.593s
+sys		2m22.496s
+
+failAfterPostMsg test
+
+real	13m19.043s
+user	3m27.508s
+sys		2m21.491s
+
+Mixed test:
+
+real	15m49.338s
+user	3m48.953s
+sys		2m44.012s
+
+Test: Count = 10028
+FailBeforePreMsg: Count = 10080
+failAfterPreMsg: Count = 9992
+failAfterJdbcInsert: Count = 9913
+failAfterPostMsg: Count = 9988
+
+
